@@ -16,8 +16,9 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/ikonli-core-12.3.1.jar"/>
-	<classpathentry kind="lib" path="libs/ikonli-fontawesome-pack-12.3.1.jar"/>
-	<classpathentry kind="lib" path="libs/ikonli-javafx-12.3.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/PostegresConnector"/>
+	<classpathentry kind="lib" path="libs/fontawesomefx-fontawesome-4.7.0-9.1.2.jar"/>
+	<classpathentry kind="lib" path="libs/fontawesomefx-commons-9.1.2.jar"/>
+	<classpathentry kind="lib" path="libs/fontawesomefx-controls-9.1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

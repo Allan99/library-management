@@ -22,7 +22,7 @@
 	-fx-cursor:hand;
 }
 
-#close:hover{
+#minimize:hover{
 	-fx-background-color: #5481ab;
 }
 
