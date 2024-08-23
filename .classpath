@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="libs/fontawesomefx-fontawesome-4.7.0-9.1.2.jar"/>
 	<classpathentry kind="lib" path="libs/fontawesomefx-commons-9.1.2.jar"/>
 	<classpathentry kind="lib" path="libs/fontawesomefx-controls-9.1.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
