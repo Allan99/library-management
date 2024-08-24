@@ -14,7 +14,6 @@ public class Student implements Serializable{
 	}
 
 	public Student(Integer id, String number, String password) {
-		super();
 		this.id = id;
 		this.number = number;
 		this.password = password;
@@ -46,7 +45,7 @@ public class Student implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(id, number, password);
 	}
 
 	@Override
@@ -58,7 +57,8 @@ public class Student implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Student other = (Student) obj;
-		return Objects.equals(id, other.id);
+		return Objects.equals(id, other.id) && Objects.equals(number, other.number)
+				&& Objects.equals(password, other.password);
 	}
 
 	@Override

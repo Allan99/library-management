@@ -19,7 +19,7 @@
 						<Font name="SansSerif Bold" size="30.0" />
 					</font>
 				</Label>
-				<Button id="login-btn" fx:id="btnLogin" layoutX="193.0" layoutY="252.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="87.0" text="Login" />
+				<Button id="login-btn" fx:id="btnLogin" layoutX="193.0" layoutY="252.0" mnemonicParsing="false" onAction="#login" prefHeight="43.0" prefWidth="87.0" text="Login" />
 				<FontAwesomeIconView fill="#f6f6f6" glyphName="USERS" layoutX="198.0" layoutY="83.0" size="80" />
 			</children>
 		</AnchorPane>
