@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import db.DB;
@@ -14,11 +15,14 @@ import model.entities.Student;
 
 public class StudentDaoJDBC implements StudentDao {
 
-	private Connection conn = null;
+	private Connection conn;
+	
+	public StudentDaoJDBC(Connection conn) {
+		this.conn = conn;
+	}
 
 	@Override
 	public void insert(Student student) {
-		conn = DB.getConnection();
 		PreparedStatement ps = null;
 		try {
 			ps = conn.prepareStatement("INSERT INTO student " + "(number, password) " + "VALUES " + "(?, ?)",
@@ -51,31 +55,112 @@ public class StudentDaoJDBC implements StudentDao {
 
 	@Override
 	public void update(Student student) {
-		// TODO Auto-generated method stub
+		PreparedStatement ps = null;
+		
+		try {
+			ps = conn.prepareStatement("UPDATE student "
+					+ "SET number = ?, password = ? "
+					+ "WHERE id = ?");
+			
+			ps.setString(1, student.getNumber());
+			ps.setString(2, student.getPassword());
+			ps.setInt(3, student.getId());
+			
+			ps.executeUpdate();
+			
+			conn.commit();
+			
+		}catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}finally {
+			DB.closeStatement(ps);
+		}
 
 	}
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
-
+		PreparedStatement ps = null;
+		try {
+			ps = conn.prepareStatement("DELETE FROM student "
+					+"WHERE id = ?");
+			ps.setInt(1, id);
+			ps.executeUpdate();
+			
+			conn.commit();
+			
+		}catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}finally {
+			DB.closeStatement(ps);
+		}
 	}
 
 	@Override
 	public Student findById(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			
+			ps = conn.prepareStatement("SELECT id, number, password "
+					+"FROM student "
+					+"WHERE id = ?");
+			
+			ps.setInt(1, id);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				Student student = instantiateStudent(rs);
+				return student;
+			}
+			return null;
+			
+		}catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}finally {
+			DB.closeStatement(ps);
+			DB.closeResultSet(rs);
+		}
+	}
+
+	private Student instantiateStudent(ResultSet rs) throws SQLException {
+		Student student = new Student();
+		student.setId(rs.getInt("id"));
+		student.setNumber(rs.getString("number"));
+		student.setPassword(rs.getString("password"));
+		return student;
 	}
 
 	@Override
 	public List<Student> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			
+			ps = conn.prepareStatement("SELECT id, number, password "
+					+"FROM student "
+					+"ORDER BY number");
+			rs = ps.executeQuery();
+			
+			List<Student> allStudents = new ArrayList<Student>();
+			
+			while(rs.next()) {
+				Student student = instantiateStudent(rs);
+				allStudents.add(student);
+			}
+			return allStudents;
+			
+		}catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}finally {
+			DB.closeStatement(ps);
+			DB.closeResultSet(rs);
+		}
 	}
 
 	@Override
 	public Student findStudentLogin(String studentNumber, String studentPassword) {
-		conn = DB.getConnection();
 		String sql = "SELECT * FROM student WHERE number = ? AND password = ?";
 		PreparedStatement ps = null;
 		ResultSet rs = null;
