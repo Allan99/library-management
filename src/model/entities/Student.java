@@ -9,14 +9,17 @@ public class Student implements Serializable{
 	private Integer id;
 	private String number;
 	private String password;
+	private String image;
 	
 	public Student() {
 	}
 
-	public Student(Integer id, String number, String password) {
+	public Student(Integer id, String number, String password, String image) {
+		super();
 		this.id = id;
 		this.number = number;
 		this.password = password;
+		this.image = image;
 	}
 
 	public Integer getId() {
@@ -43,9 +46,17 @@ public class Student implements Serializable{
 		this.password = password;
 	}
 
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, number, password);
+		return Objects.hash(id, number);
 	}
 
 	@Override
@@ -57,13 +68,13 @@ public class Student implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Student other = (Student) obj;
-		return Objects.equals(id, other.id) && Objects.equals(number, other.number)
-				&& Objects.equals(password, other.password);
+		return Objects.equals(id, other.id) && Objects.equals(number, other.number);
 	}
 
 	@Override
 	public String toString() {
-		return "Student [id=" + id + ", number=" + number + ", password=" + password + "]";
+		return "Student [id=" + id + ", number=" + number + ", password=" + password + ", image=" + image + "]";
 	}
 
+	
 }

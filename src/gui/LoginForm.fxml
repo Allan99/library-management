@@ -12,7 +12,7 @@
 	<children>
 		<AnchorPane id="card-form" layoutX="102.0" layoutY="50.0" prefHeight="370.0" prefWidth="487.0">
 			<children>
-				<TextField id="textfield" fx:id="txtStudentNumber" layoutX="122.0" layoutY="160.0" prefHeight="25.0" prefWidth="230.0" promptText="Student Number" />
+				<TextField id="textfield" fx:id="txtStudentNumber" layoutX="122.0" layoutY="160.0" onKeyTyped="#numbersOnly" prefHeight="25.0" prefWidth="230.0" promptText="Student Number" />
 				<PasswordField id="textfield" fx:id="txtStudentPassword" layoutX="122.0" layoutY="195.0" prefHeight="25.0" prefWidth="230.0" promptText="Password" />
 				<Label layoutX="197.0" layoutY="100.0" text="Login" textFill="WHITE">
 					<font>

@@ -30,6 +30,7 @@ public class StudentDaoJDBC implements StudentDao {
 
 			ps.setString(1, student.getNumber());
 			ps.setString(2, student.getPassword());
+			ps.setString(3, student.getImage());
 
 			int rowsAffected = ps.executeUpdate();
 
@@ -59,12 +60,13 @@ public class StudentDaoJDBC implements StudentDao {
 		
 		try {
 			ps = conn.prepareStatement("UPDATE student "
-					+ "SET number = ?, password = ? "
+					+ "SET number = ?, password = ?, image = ? "
 					+ "WHERE id = ?");
 			
 			ps.setString(1, student.getNumber());
 			ps.setString(2, student.getPassword());
 			ps.setInt(3, student.getId());
+			ps.setString(4, student.getImage());
 			
 			ps.executeUpdate();
 			
@@ -129,6 +131,7 @@ public class StudentDaoJDBC implements StudentDao {
 		student.setId(rs.getInt("id"));
 		student.setNumber(rs.getString("number"));
 		student.setPassword(rs.getString("password"));
+		student.setImage(rs.getString("image"));
 		return student;
 	}
 
@@ -176,7 +179,8 @@ public class StudentDaoJDBC implements StudentDao {
 				int id = rs.getInt(1);
 				String number = rs.getString(2);
 				String password = rs.getString(3);
-				return new Student(id, number, password);
+				String image = rs.getString(4);
+				return new Student(id, number, password, image);
 			}
 			return null;
 

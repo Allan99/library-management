@@ -1,9 +1,7 @@
 package gui;
 
 import java.io.IOException;
-import java.sql.Connection;
 
-import db.DB;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,7 +11,10 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import model.dao.DaoFactory;
 import model.dao.StudentDao;
 import model.entities.Student;
@@ -37,6 +38,9 @@ public class LoginFormController {
 	@FXML
 	private PasswordField txtStudentPassword;
 	
+	private double x = 0;
+	private double y = 0;
+	
 	@FXML
 	public void login() {
 		String studentNumber = txtStudentNumber.getText();
@@ -55,11 +59,7 @@ public class LoginFormController {
 				btnLogin.getScene().getWindow().hide();
 
 				try {
-					Parent root = FXMLLoader.load(getClass().getResource("/gui/Dashboard.fxml"));
-					Stage stage = new Stage();
-					Scene scene = new Scene(root);
-					stage.setScene(scene);
-					stage.show();
+					exibitNewScene("/gui/Dashboard.fxml");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -80,6 +80,15 @@ public class LoginFormController {
 	public void exit() {
 		System.exit(0);
 	}
+	
+	public void numbersOnly(KeyEvent event) {
+		if(event.getCharacter().matches("[^\\e\t\r\\d+$]")) {
+			event.consume();
+			txtStudentNumber.setStyle("-fx-border-color: #e04040");
+		}else {
+			txtStudentNumber.setStyle("-fx-border-color: #fff");
+		}
+	}
 
 	private void showAlert(AlertType alertType, String title, String contentText) {
 		Alert alert = new Alert(alertType);
@@ -89,4 +98,24 @@ public class LoginFormController {
 		alert.showAndWait();
 	}
 
+	private void exibitNewScene(String path) throws IOException {
+		Parent root = FXMLLoader.load(getClass().getResource(path));
+		Stage stage = new Stage();
+		
+		stage.initStyle(StageStyle.TRANSPARENT);
+		
+		root.setOnMousePressed((MouseEvent e) -> {
+			x = e.getSceneX();
+			y = e.getSceneY();
+		});
+		
+		root.setOnMouseDragged((MouseEvent e) -> {
+			stage.setX(e.getScreenX() - x);
+			stage.setY(e.getScreenY() - y);
+		});
+		
+		Scene scene = new Scene(root);
+		stage.setScene(scene);
+		stage.show();
+	}
 }
