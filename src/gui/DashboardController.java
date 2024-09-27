@@ -1,16 +1,23 @@
 package gui;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import java.util.ResourceBundle;
+
+import javax.print.DocFlavor.URL;
+
 import javafx.animation.TranslateTransition;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -18,8 +25,11 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import model.dao.BookDao;
+import model.dao.DaoFactory;
+import model.entities.AvailableBook;
 
-public class DashboardController {
+public class DashboardController implements Initializable{
 	
 	@FXML
     private Button halfNav_availableBookBtn;
@@ -64,7 +74,7 @@ public class DashboardController {
 	private ImageView availableBooks_img;
 
 	@FXML
-	private TableView<?> availableBooks_table;
+	private TableView<AvailableBook> availableBooks_table;
 
 	@FXML
 	private Label availableBooks_title;
@@ -73,16 +83,16 @@ public class DashboardController {
 	private Circle circle_image;
 
 	@FXML
-	private TableColumn<?, ?> col_av_author;
+	private TableColumn<AvailableBook, String> col_av_author;
 
 	@FXML
-	private TableColumn<?, ?> col_av_bookTitle;
+	private TableColumn<AvailableBook, String> col_av_bookTitle;
 
 	@FXML
-	private TableColumn<?, ?> col_av_bookType;
+	private TableColumn<AvailableBook, String> col_av_bookType;
 
 	@FXML
-	private TableColumn<?, ?> col_av_publishedDate;
+	private TableColumn<AvailableBook, String> col_av_publishedDate;
 
 	@FXML
 	private Button edit_btn;
@@ -107,6 +117,30 @@ public class DashboardController {
 
 	@FXML
 	private Button take_btn;
+	
+	public ObservableList<AvailableBook> dataList(){
+		
+		BookDao bookDao = DaoFactory.createBookDao();
+		
+		ObservableList<AvailableBook> listBooks = FXCollections.observableList(bookDao.findAll());
+		
+		return listBooks;
+		
+	}
+	
+	private ObservableList<AvailableBook> listBooks;
+	
+	public void showAvailableBooks() {
+		listBooks = dataList();
+		
+		col_av_bookTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
+		col_av_author.setCellValueFactory(new PropertyValueFactory<>("author"));
+		col_av_bookType.setCellValueFactory(new PropertyValueFactory<>("genre"));
+		col_av_publishedDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+		
+		availableBooks_table.setItems(listBooks);
+	}
+	
 
 	private double x = 0;
 	private double y = 0;
@@ -209,4 +243,15 @@ public class DashboardController {
 		Stage stage = (Stage) minimize_btn.getScene().getWindow();
 		stage.setIconified(true);
 	}
+
+	@Override
+	public void initialize(java.net.URL arg0, ResourceBundle arg1) {
+		
+		showAvailableBooks();
+		
+	}
+	
+	
+	
+
 }

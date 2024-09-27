@@ -65,8 +65,8 @@ public class StudentDaoJDBC implements StudentDao {
 			
 			ps.setString(1, student.getNumber());
 			ps.setString(2, student.getPassword());
-			ps.setInt(3, student.getId());
-			ps.setString(4, student.getImage());
+			ps.setString(3, student.getImage());
+			ps.setInt(4, student.getId());
 			
 			ps.executeUpdate();
 			
