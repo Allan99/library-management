@@ -20,19 +20,14 @@ public class BookDaoJDBCUnitTests {
 		
 		try {
 			
-			AvailableBook book = new AvailableBook(1, "Harry Potter e a Pedra Filosofal"
-					,"J.K. Rowling"
-					, "Ficção científica e fantasia"
-					, "C:\\Users\\allan\\Downloads\\harry.jpg"
-					, sdf.parse("26/06/1997"));
+			AvailableBook book = new AvailableBook();
+			book.setTitle("O senhor dos anéis: O retorno do rei");
+			book.setAuthor("J.R.R. Tolkien");
+			book.setGenre("Literatura fantástica");
+			book.setDate(sdf.parse("20/10/1955"));
+			book.setImage("C:\\java-new-workspace\\libraryManagement\\src\\images\\o_retorno_do_rei.jpg");
 			
-			AvailableBook book2 = new AvailableBook(1, "O Senhor dos Anéis: A Sociedade do Anel"
-					,"J.R.R. Tolkien"
-					, "Literatura fantástica"
-					, "C:\\Users\\allan\\Downloads\\content.jpg"
-					, sdf.parse("29/07/1954"));
-			
-			bookdao.insert(book2);
+			bookdao.insert(book);
 			
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -46,7 +41,7 @@ public class BookDaoJDBCUnitTests {
 		
 		AvailableBook book = bookDao.findById(2);
 		
-		book.setImage("C:\\java-new-workspace\\libraryManagement\\src\\images\\content.jpg");
+		book.setImage("C:\\java-new-workspace\\libraryManagement\\src\\images\\sociedade_do_anel.jpg");
 		
 		bookDao.update(book);
 	}

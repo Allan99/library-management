@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -53,13 +54,39 @@ public class LoginFormController {
 		} else {
 			if (studentFound!=null && studentFound.getNumber().equalsIgnoreCase(studentNumber)
 					&& studentFound.getPassword().equalsIgnoreCase(studentPassword)) {
-
+				
 				showAlert(AlertType.INFORMATION, "Admin Message", "Your login was successfull!");
 				
 				btnLogin.getScene().getWindow().hide();
 
 				try {
-					exibitNewScene("/gui/Dashboard.fxml");
+					// OPEN NEW DASHBOARD SCENE
+					String path = "/gui/Dashboard.fxml";
+					Parent root = FXMLLoader.load(getClass().getResource(path));
+					Stage stage = new Stage();
+					
+					stage.initStyle(StageStyle.TRANSPARENT);
+					
+					root.setOnMousePressed((MouseEvent e) -> {
+						x = e.getSceneX();
+						y = e.getSceneY();
+					});
+					
+					root.setOnMouseDragged((MouseEvent e) -> {
+						stage.setX(e.getScreenX() - x);
+						stage.setY(e.getScreenY() - y);
+					});
+					
+					FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+					root = loader.load();
+					
+					DashboardController dashboardController = loader.getController();
+					dashboardController.studentNumber(studentNumber);
+					
+					Scene scene = new Scene(root);
+					stage.setScene(scene);
+					stage.show();
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -98,24 +125,4 @@ public class LoginFormController {
 		alert.showAndWait();
 	}
 
-	private void exibitNewScene(String path) throws IOException {
-		Parent root = FXMLLoader.load(getClass().getResource(path));
-		Stage stage = new Stage();
-		
-		stage.initStyle(StageStyle.TRANSPARENT);
-		
-		root.setOnMousePressed((MouseEvent e) -> {
-			x = e.getSceneX();
-			y = e.getSceneY();
-		});
-		
-		root.setOnMouseDragged((MouseEvent e) -> {
-			stage.setX(e.getScreenX() - x);
-			stage.setY(e.getScreenY() - y);
-		});
-		
-		Scene scene = new Scene(root);
-		stage.setScene(scene);
-		stage.show();
-	}
 }
