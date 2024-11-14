@@ -1,6 +1,8 @@
 package gui;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,7 +22,7 @@ import model.dao.DaoFactory;
 import model.dao.StudentDao;
 import model.entities.Student;
 
-public class LoginFormController {
+public class LoginFormController implements Initializable{
 
 	StudentDao studentDao = DaoFactory.createStudentDao();
 	
@@ -82,6 +84,7 @@ public class LoginFormController {
 					
 					DashboardController dashboardController = loader.getController();
 					dashboardController.studentNumber(studentNumber);
+					dashboardController.studentNumberLabel(studentNumber);
 					
 					Scene scene = new Scene(root);
 					stage.setScene(scene);
@@ -123,6 +126,11 @@ public class LoginFormController {
 		alert.setHeaderText(null);
 		alert.setContentText(contentText);
 		alert.showAndWait();
+	}
+
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+				
 	}
 
 }

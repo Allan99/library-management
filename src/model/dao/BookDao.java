@@ -10,5 +10,6 @@ public interface BookDao {
 	void update(AvailableBook book);
 	void deleteById(Integer id);
 	AvailableBook findById(Integer id);
+	AvailableBook findByTitle(String title);
 	List<AvailableBook> findAll();
 }

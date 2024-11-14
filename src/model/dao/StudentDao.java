@@ -11,5 +11,6 @@ public interface StudentDao {
 	void deleteById(Integer id);
 	Student findById(Integer id);
 	Student findStudentLogin(String studentNumber, String studentPassword);
+	Student findStudentByNumber(String studentNumber);
 	List<Student> findAll();
 }

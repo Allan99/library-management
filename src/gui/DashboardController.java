@@ -1,5 +1,9 @@
 package gui;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.animation.TranslateTransition;
@@ -11,10 +15,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,9 +34,55 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import model.dao.BookDao;
 import model.dao.DaoFactory;
+import model.dao.StudentDao;
+import model.dao.TakeDao;
 import model.entities.AvailableBook;
+import model.entities.Student;
+import model.entities.Take;
 
 public class DashboardController implements Initializable {
+
+	@FXML
+	private ImageView take_availableBookImage;
+
+	@FXML
+	private TextField take_FirstName;
+
+	@FXML
+	private ComboBox<?> take_Gender;
+
+	@FXML
+	private Label take_IssuedDate;
+
+	@FXML
+	private TextField take_LastName;
+
+	@FXML
+	private Label take_StudentNumber;
+
+	@FXML
+	private Label take_author_label;
+
+	@FXML
+	private TextField take_bookTitle;
+
+	@FXML
+	private Button take_clearBtn;
+
+	@FXML
+	private Label take_date_label;
+
+	@FXML
+	private Label take_genre_label;
+
+	@FXML
+	private Button take_takeBtn;
+
+	@FXML
+	private Label take_title_label;
+
+	@FXML
+	private Label currentForm_lbl;
 
 	@FXML
 	private AnchorPane savedBook_form;
@@ -128,6 +182,135 @@ public class DashboardController implements Initializable {
 
 	private Image image;
 
+	private String comboBox[] = { "Male", "Female", "Others" };
+
+	public void gender() {
+
+		List<String> combo = new ArrayList<String>();
+
+		for (String data : comboBox) {
+
+			combo.add(data);
+		}
+
+		ObservableList list = FXCollections.observableList(combo);
+
+		take_Gender.setItems(list);
+	}
+
+	public void findBook(ActionEvent event) {
+		BookDao bookDao = DaoFactory.createBookDao();
+
+		Alert alert;
+
+		if (take_bookTitle.getText().isEmpty()) {
+			showAlert(AlertType.ERROR, "Admin message", "Please select the book.");
+		} else if (take_FirstName.getText().isEmpty() || take_LastName.getText().isEmpty()
+				|| take_Gender.getSelectionModel().isEmpty()) {
+
+			showAlert(AlertType.ERROR, "Admin Message", "Please inform all of the student details.");
+
+		} else {
+			AvailableBook book = bookDao.findByTitle(take_bookTitle.getText());
+			if (book == null) {
+				take_title_label.setText("Book not available");
+				take_author_label.setText("");
+				take_genre_label.setText("");
+				take_date_label.setText("");
+				take_availableBookImage.setImage(null);
+			} else {
+				take_title_label.setText(book.getTitle());
+				take_author_label.setText(book.getAuthor());
+				take_genre_label.setText(book.getGenre());
+				take_date_label.setText(book.getDate().toString());
+
+				String uri = "file:" + book.getImage();
+
+				image = new Image(uri, 134, 171, false, true);
+				take_availableBookImage.setImage(image);
+			}
+		}
+	}
+	
+	public void studentNumberLabel(String studentNumber) {
+		take_StudentNumber.setText(studentNumber);
+	}
+	
+	public void clearTakeData() {
+		take_bookTitle.setText("");
+		take_title_label.setText("");
+		take_author_label.setText("");
+		take_genre_label.setText("");
+		take_date_label.setText("");
+		take_availableBookImage.setImage(null);
+	}
+
+	/*public void clearFindData() {
+		take_bookTitle.setText("");
+		take_title_label.setText("");
+		take_author_label.setText("");
+		take_genre_label.setText("");
+		take_date_label.setText("");
+	}*/
+	
+	public void takeBook(){
+		
+		Alert alert;
+		
+		if(take_FirstName.getText().isEmpty() 
+				|| take_LastName.getText().isEmpty()
+				|| take_Gender.getSelectionModel().isEmpty()) {
+			
+			alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Admin Message");
+			alert.setHeaderText(null);
+			alert.setContentText("Please type complete Student Details");
+			alert.showAndWait();
+		}else if(take_title_label.getText().isEmpty()){
+			alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Admin Message");
+			alert.setHeaderText(null);
+			alert.setContentText("Please indicate the book you want to take.");
+			alert.showAndWait();
+		}else {
+			
+			TakeDao takeDao = DaoFactory.createTakeDao();
+			BookDao bookDao = DaoFactory.createBookDao();
+			
+			AvailableBook book = bookDao.findByTitle(take_title_label.getText());
+			
+			Take take = new Take();
+			take.setStudentNumber(take_StudentNumber.getText());
+			take.setFirstName(take_FirstName.getText());
+			take.setLastName(take_LastName.getText());
+			take.setGender(take_Gender.getValue().toString());
+			take.setBookTitle(book.getTitle());
+			take.setImage(book.getImage());
+			take.setDate(new Date());
+			
+			String check = "Not Return";
+			
+			take.setCheckReturn(check);
+			
+			takeDao.insert(take);
+			
+			alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Admin Message");
+			alert.setHeaderText(null);
+			alert.setContentText("Successful!");
+			alert.showAndWait();
+			
+			clearTakeData();
+		}
+	}
+
+	public void displayDate() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String date = sdf.format(new Date());
+		
+		take_IssuedDate.setText(date);
+	}
+	
 	public ObservableList<AvailableBook> dataList() {
 
 		BookDao bookDao = DaoFactory.createBookDao();
@@ -161,6 +344,90 @@ public class DashboardController implements Initializable {
 		}
 	}
 
+	public void navButtonDesign(ActionEvent event) {
+		if (event.getSource() == availableBooks_btn || event.getSource() == halfNav_availableBookBtn) {
+
+			currentForm_lbl.setText("Available Books");
+
+			issue_form.setVisible(false);
+			savedBook_form.setVisible(false);
+			availableBooks_form.setVisible(true);
+			returnBook_form.setVisible(false);
+
+			availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #46589a, #4278a7);");
+			issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+
+			halfNav_availableBookBtn
+					.setStyle("-fx-background-color:linear-gradient(to bottom right, #46589a, #4278a7);");
+			halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+
+		} else if (event.getSource() == issueBooks_btn || event.getSource() == halfNav_takeBtn) {
+
+			currentForm_lbl.setText("Issue Books");
+
+			issue_form.setVisible(true);
+			savedBook_form.setVisible(false);
+			availableBooks_form.setVisible(false);
+			returnBook_form.setVisible(false);
+
+			issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #46589a, #4278a7);");
+			availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+
+			halfNav_availableBookBtn
+					.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #46589a, #4278a7);");
+			halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+
+		} else if (event.getSource() == returnBooks_btn || event.getSource() == halfNav_returnBtn) {
+
+			currentForm_lbl.setText("Return Books");
+
+			issue_form.setVisible(false);
+			savedBook_form.setVisible(false);
+			availableBooks_form.setVisible(false);
+			returnBook_form.setVisible(true);
+
+			returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #46589a, #4278a7);");
+			availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+
+			halfNav_availableBookBtn
+					.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #46589a, #4278a7);");
+			halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+
+		} else if (event.getSource() == savedBooks_btn || event.getSource() == halfNav_saveBtn) {
+
+			currentForm_lbl.setText("Saved Books");
+
+			issue_form.setVisible(false);
+			savedBook_form.setVisible(true);
+			availableBooks_form.setVisible(false);
+			returnBook_form.setVisible(false);
+
+			savedBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #46589a, #4278a7);");
+			availableBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			issueBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			returnBooks_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+
+			halfNav_availableBookBtn
+					.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			halfNav_takeBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			halfNav_returnBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #344275, #3a6389);");
+			halfNav_saveBtn.setStyle("-fx-background-color:linear-gradient(to bottom right, #46589a, #4278a7);");
+
+		}
+	}
+
 	public void selectAvailableBooks() {
 		AvailableBook bookData = availableBooks_table.getSelectionModel().getSelectedItem();
 
@@ -169,6 +436,7 @@ public class DashboardController implements Initializable {
 		if ((num - 1) < -1)
 			return;
 
+		availableBooks_title.setWrapText(true);
 		availableBooks_title.setText(bookData.getTitle());
 
 		String uri = "file:" + bookData.getImage();
@@ -283,10 +551,21 @@ public class DashboardController implements Initializable {
 		stage.setIconified(true);
 	}
 
+	private void showAlert(AlertType alertType, String title, String contentText) {
+		Alert alert = new Alert(alertType);
+		alert.setTitle(title);
+		alert.setHeaderText(null);
+		alert.setContentText(contentText);
+		alert.showAndWait();
+	}
+
 	@Override
 	public void initialize(java.net.URL arg0, ResourceBundle arg1) {
-
 		showAvailableBooks();
+		
+		gender();
+		
+		displayDate();
 
 	}
 

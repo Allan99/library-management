@@ -104,7 +104,7 @@ public class StudentDaoJDBC implements StudentDao {
 		ResultSet rs = null;
 		try {
 			
-			ps = conn.prepareStatement("SELECT id, number, password "
+			ps = conn.prepareStatement("SELECT * "
 					+"FROM student "
 					+"WHERE id = ?");
 			
@@ -132,6 +132,9 @@ public class StudentDaoJDBC implements StudentDao {
 		student.setNumber(rs.getString("number"));
 		student.setPassword(rs.getString("password"));
 		student.setImage(rs.getString("image"));
+		student.setFirstName(rs.getString("Name"));
+		student.setLastName(rs.getString("LastName"));
+		student.setGender(rs.getString("gender"));
 		return student;
 	}
 
@@ -180,13 +183,40 @@ public class StudentDaoJDBC implements StudentDao {
 				String number = rs.getString(2);
 				String password = rs.getString(3);
 				String image = rs.getString(4);
-				return new Student(id, number, password, image);
+				String firstName = rs.getString(5);
+				String lastName = rs.getString(6);
+				String gender = rs.getString(7);
+				return new Student(id, firstName, lastName, gender, number, password, image);
 			}
 			return null;
 
 		} catch (Exception e) {
 			throw new DbException(e.getMessage());
 		} finally {
+			DB.closeStatement(ps);
+			DB.closeResultSet(rs);
+		}
+	}
+
+	@Override
+	public Student findStudentByNumber(String studentNumber) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT * FROM student WHERE number = ?");
+			
+			ps.setString(1, studentNumber);
+			
+			rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				Student student = instantiateStudent(rs);
+				return student;
+			}
+			return null;
+		}catch(Exception e) {
+			throw new DbException(e.getMessage());
+		}finally {
 			DB.closeStatement(ps);
 			DB.closeResultSet(rs);
 		}

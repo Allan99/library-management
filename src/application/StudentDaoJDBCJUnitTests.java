@@ -16,9 +16,6 @@ public class StudentDaoJDBCJUnitTests {
 
 		for (int i = 0; i < 3; i++) {
 
-			Student student = new Student(1, "9034588", "fff444555", "");
-
-			studentDao.insert(student);
 		}
 	}
 
